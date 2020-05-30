@@ -18,4 +18,4 @@ app.get('/', (req, res) => {
     })
 })
 
-app.listen(process.env.API_PORT)
+app.listen(process.env.API_PORT, () => console.log('server started'))

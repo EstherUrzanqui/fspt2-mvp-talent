@@ -5,20 +5,21 @@ const db = require('./model/helper.js')
 const routes = express.Router()
 
 // candidate table's routes
-routes.get('/candidate' , (req, res) => {
-    db('SELECT * FROM candidate;').then(results => {
-        if(results.error) {
-            res.status(400).send({ message: 'There was an error'})
-        }
+routes.get('/candidates' , (req, res) => {
+    db('SELECT mother_tongue, department, experience, relocation, remote FROM candidates;').then(results => {
+      if(results.error) {
+          res.status(400).send({ message: 'There was an error'})
+      }
+      
+      res.send(results.data)
+  })
         
-        res.send(results.data)
-    })
 }) 
 
-routes.get('/candidate/:id', (req, res) => {
+routes.get('/candidates/:id', (req, res) => {
     const { id } = req.params;
   
-    db(`SELECT * FROM candidate WHERE id=${id};`)
+    db(`SELECT * FROM candidates WHERE id=${id};`)
       .then(results => {
         if (results.data[0]) {
           res.send(results.data[0]);
@@ -28,10 +29,10 @@ routes.get('/candidate/:id', (req, res) => {
       .catch(err => res.status(500).send(err));
   });
 
-routes.post("/candidate/", (req, res) => {
+routes.post("/candidates/", (req, res) => {
   const { firstname, lastname, email_address, mother_tongue, department, experience, relocation, remote } = req.body;
   db(
-    `INSERT INTO candidate (firstname,lastname, email_address, mother_tongue, department, experience, relocation, remote) VALUES ('${firstname}', '${lastname}', '${email_address}', '${mother_tongue}', '${department}', '${experience}', '${relocation}', '${remote}');`
+    `INSERT INTO candidates (firstname,lastname, email_address, mother_tongue, department, experience, relocation, remote) VALUES ('${firstname}', '${lastname}', '${email_address}', '${mother_tongue}', '${department}', '${experience}', '${relocation}', '${remote}');`
   )
     .then(results => {
       if (!results.error) {
@@ -42,10 +43,10 @@ routes.post("/candidate/", (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-routes.delete("/candidate/:id", (req, res) => {
+routes.delete("/candidates/:id", (req, res) => {
   const { id } = req.params;
 
-  db(`DELETE FROM candidate WHERE id=${id};`)
+  db(`DELETE FROM candidates WHERE id=${id};`)
     .then(results => {
       if (!results.error) {
         res.status(201).send({});
@@ -55,9 +56,9 @@ routes.delete("/candidate/:id", (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-//company table's routes
-routes.get('/company' , (req, res) => {
-  db('SELECT * FROM company;').then(results => {
+//companies table's routes
+routes.get('/companies' , (req, res) => {
+  db('SELECT * FROM companies;').then(results => {
       if(results.error) {
           res.status(400).send({ message: 'There was an error'})
       }
@@ -66,10 +67,10 @@ routes.get('/company' , (req, res) => {
   })
 }) 
 
-routes.get('/company/:id', (req, res) => {
+routes.get('/companies/:id', (req, res) => {
   const { id } = req.params;
 
-  db(`SELECT * FROM company WHERE id=${id};`)
+  db(`SELECT * FROM companies WHERE id=${id};`)
     .then(results => {
       if (results.data[0]) {
         res.send(results.data[0]);
@@ -79,10 +80,10 @@ routes.get('/company/:id', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-routes.post("/company/", (req, res) => {
+routes.post("/companies/", (req, res) => {
 const { name, city } = req.body;
 db(
-  `INSERT INTO company (name, city) VALUES ('${name}', '${city}');`
+  `INSERT INTO companies (name, city) VALUES ('${name}', '${city}');`
 )
   .then(results => {
     if (!results.error) {
@@ -93,10 +94,10 @@ db(
   .catch(err => res.status(500).send(err));
 });
 
-routes.delete("/company/:id", (req, res) => {
+routes.delete("/companies/:id", (req, res) => {
 const { id } = req.params;
 
-db(`DELETE FROM company WHERE id=${id};`)
+db(`DELETE FROM companies WHERE id=${id};`)
   .then(results => {
     if (!results.error) {
       res.status(201).send({});
@@ -145,16 +146,32 @@ db(
 });
 
 routes.delete("/skills/:id", (req, res) => {
-const { id } = req.params;
+  const { id } = req.params;
+  
+  db(`DELETE FROM skills WHERE id=${id};`)
+    .then(results => {
+      if (!results.error) {
+        res.status(201).send({});
+      }
+      res.send(results);
+    })
+    .catch(err => res.status(500).send(err));
+  });
 
-db(`DELETE FROM skills WHERE id=${id};`)
-  .then(results => {
-    if (!results.error) {
-      res.status(201).send({});
-    }
-    res.send(results);
+
+
+//companies_candidates table route
+
+routes.get('/companies_candidates' , (req, res) => {
+  db('SELECT candidates.mother_tongue as mother_tongue, candidates.department as department, candidates.experience as experience, candidates.relocation as relocation, candidates.remote as remote, companies.name as company, companies.City as city FROM candidates INNER JOIN companies on candidates.id = companies.id;').then(results => {
+      if(results.error) {
+          res.status(400).send({ message: 'There was an error'})
+      }
+      
+      res.send(results.data)
   })
-  .catch(err => res.status(500).send(err));
-});
+}) 
+
+
 
 module.exports = routes
