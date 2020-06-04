@@ -36,3 +36,29 @@
     transform: rotate(360deg);
   }
 }
+
+.ul {
+  list-style: none;
+  border: 1px solid grey;
+  width: 280px;
+}
+
+.list{
+ 
+  flex-direction: column;
+}
+
+.contact{
+  border: none;
+  background: #868585;
+  color: #ffffff !important;
+  font: bold;
+  padding: 10px;
+  text-transform: uppercase;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+
+
+
