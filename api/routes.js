@@ -6,7 +6,8 @@ const routes = express.Router()
 
 // get all the candidates 
 routes.get('/candidates' , (req, res) => {
-    db('SELECT mother_tongue, department, experience, relocation, remote FROM candidates;').then(results => {
+    db('SELECT * FROM candidates;')
+    .then(results => {
       if(results.error) {
           res.status(400).send({ message: 'There was an error'})
       }
@@ -33,10 +34,7 @@ routes.get('/candidates/department/:department', (req, res) => {
 routes.post("/candidates/", (req, res) => {
   const { firstname, lastname, email_address, mother_tongue, department, experience, relocation, remote, company_id, title, description, name, city } = req.body;
   db(
-    `SET @candidatesId = "candidates.id;
-    SET @skillsId = "skills.id;
-    SET @companyId = "companies.id";
-    INSERT INTO candidates (firstname,lastname, email_address, mother_tongue, department, experience, relocation, remote, company_id) 
+    `INSERT INTO candidates (firstname,lastname, email_address, mother_tongue, department, experience, relocation, remote, company_id) 
     VALUES ('${firstname}', '${lastname}', '${email_address}', '${mother_tongue}', '${department}', '${experience}', '${relocation}', '${remote}', '${company_id}'); 
     SELECT LAST_INSERT_ID() INTO @candidatesId; 
     INSERT INTO skills (title, description) VALUES ('${title}, '${description}');
@@ -44,7 +42,7 @@ routes.post("/candidates/", (req, res) => {
     INSERT INTO companies (name, city) VALUES ('${name}', '${city});
     SELECT LAST_INSERT_ID() INTO @companyId; 
     INSERT INTO candidates_skills (candidate_id, skills_id) VALUES (@candidatesId, @skillsId);
-    INSERT INTO companies_candidates (candidate_id, company_id) VALUES (@CandidateId, @companyId)`
+    INSERT INTO companies_candidates (candidate_id, company_id) VALUES (@candidateId, @companyId)`
   )
     .then(results => {
       if (!results.error) {
@@ -74,16 +72,18 @@ routes.get('/companies' , (req, res) => {
       if(results.error) {
           res.status(400).send({ message: 'There was an error'})
       }
-      
+    //const { company } = req.query;
+    //let comByName = [...companies];
+    //if (company) {
+      //comByName = comByName.filter(r => r.companies.name 
+        //=== company);
+      //}
       res.send(results.data)
   })
 }) 
 
-
 //get candidates with the companies they belong
-routes.get('/companies/candidates/:company' , (req, res) => {
-  const { company } = req.params;
-
+routes.get('/companies/candidates/' , (req, res) => {
   db(`SELECT candidates.mother_tongue, 
              candidates.department, 
              candidates.experience, 
@@ -98,11 +98,13 @@ routes.get('/companies/candidates/:company' , (req, res) => {
       if(results.error) {
           res.status(400).send({ message: 'There was an error'})
       }
-
+ 
       
       res.send(results.data)
   })
 }) 
+
+
 
 routes.get('/candidates/skills' , (req, res) => {
   db(`SELECT candidates.mother_tongue, 
@@ -117,25 +119,22 @@ routes.get('/candidates/skills' , (req, res) => {
       INNER JOIN skills 
         ON skills.id = candidates_skills.skills_id;`) 
     .then(results => {
-      const dataArray = [];
-
-      for(let i=0; i<results.length; i++) {
-        const dataItem = [];
-
-        dataItem.push(results[i]);
-
-        while(i < results.length-1 && results[i].id === results[i+1].id) {
-          i++
-          dataItem.push(results[i]);
-        }
-
-        dataArray.push(dataItem);
-      }
-      console.log('Final Array:', dataArray)
     
     res.send(results.data)
     })
 }) 
+
+routes.get('/search/:query' , (req, res) => {
+  const query = req.params.query
+  db(`SELECT department,
+             experience,
+             mother_tongue    
+      FROM candidates WHERE department LIKE '%${query}%';`) 
+    .then(results => {
+    
+    res.send(results.data)
+    })
+})
 
 
 
