@@ -21,7 +21,7 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color:black;
 }
 
 .App-link {
@@ -37,27 +37,33 @@
   }
 }
 
-.ul {
-  list-style: none;
-  border: 1px solid grey;
-  width: 280px;
+.carousel.caption h3 p {
+  align-items: flex-end;
+}
+.carousel-inner {
+  background-color: black !important;
+  
+  }
+
+.navbar {
+  background-color: black;
+  
 }
 
-.list{
- 
-  flex-direction: column;
+.searchbar {
+  display: flex;
+  align-items: flex-end;
 }
 
-.contact{
-  border: none;
-  background: #868585;
-  color: #ffffff !important;
-  font: bold;
-  padding: 10px;
-  text-transform: uppercase;
-  border-radius: 6px;
-  display: inline-block;
+.p {
+  margin-block: 10px 20px;
+  text-align: center;
+  
 }
+
+
+
+
 
 
 

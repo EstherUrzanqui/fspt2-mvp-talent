@@ -17,8 +17,8 @@
 
 .container input {
     width: 100%;
-    padding: 16px;
-    font-size: 36px;
+    padding: 8px;
+    font-size: 24px;
     font-style: italic;
     color: #444;
     box-sizing: border-box;
@@ -27,7 +27,7 @@
 
 .search-icon {
     position: absolute;
-    top: -10px;
+    top: 20px;
     font-size: 24px;
     color: #555;
     right: 18px;
