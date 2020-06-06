@@ -112,12 +112,13 @@ routes.get('/candidates/skills' , (req, res) => {
              candidates.experience, 
              candidates.relocation, 
              candidates.remote, 
-             skills.title 
+             GROUP_CONCAT(skills.title)
       FROM candidates 
       INNER JOIN candidates_skills 
         ON candidates_skills.candidate_id = candidates.id 
       INNER JOIN skills 
-        ON skills.id = candidates_skills.skills_id;`) 
+        ON skills.id = candidates_skills.skills_id
+      GROUP BY candidates.id;`) 
     .then(results => {
     
     res.send(results.data)
