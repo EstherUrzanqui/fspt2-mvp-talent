@@ -17,3 +17,4 @@ Full stack architecture
 <img width="740" alt="Screenshot 2020-06-06 at 16 04 46" src="https://user-images.githubusercontent.com/59926870/83946179-75a5d700-a80f-11ea-8707-b21cf1ef5d9c.png">
 
 _This is a student project that was created at [CodeOp](http://codeop.tech), a full stack development bootcamp in Barcelona._
+
