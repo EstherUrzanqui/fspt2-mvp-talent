@@ -1,5 +1,5 @@
 import React from "react";
-import emailjs from "./node_modules/emailjs-com";
+import emailjs from "emailjs-com";
 
 class EmailTemplate extends React.Component {
     constructor(props) {
@@ -14,8 +14,8 @@ class EmailTemplate extends React.Component {
       
     }
 
-    handleChange = (param, e) => {
-        this.setState({ [param]: e.target.value })
+    handleChange = (e) => {
+        this.setState({ [e.target.name]: e.target.value })
     }
     
     handleSubmit() {
@@ -23,15 +23,13 @@ class EmailTemplate extends React.Component {
         const service_id = "default_service";
         const template_id = "first_contact_email";
     
-        emailjs.send(service_id, template_id, template_params, user_2853rwzQwOgtGRHnfnFJO)
+        emailjs.send(service_id, template_id, template_params, "user_2853rwzQwOgtGRHnfnFJO")
          .then((response) => {
           console.log('SUCCESS!', response.status, response.text);
           }, (err) => {
           console.log('FAILED...', err);
         });
     }
-   
-     
 
     render() {
         return (
@@ -43,7 +41,7 @@ class EmailTemplate extends React.Component {
                           type="email"
                           name="email"
                           value={this.state.email}
-                          onChange={this.handleChange(this, 'email')}
+                          onChange={this.handleChange}
                           placeholder="Enter email"
                         />
                         <label className="text-muted">Subject</label>
@@ -52,16 +50,16 @@ class EmailTemplate extends React.Component {
                           name="subject"
                           className="texp-primary"
                           value={this.state.subject}
-                          onChange={this.handleChange(this, 'subject')}
+                          onChange={this.handleChange}
                           placeholder="subject"
                         />
                         <label className="text-muted">Name</label>
                         <input
                           type="text"
-                          name="name"
+                          name="from"
                           className="texp-primary"
                           value={this.state.from}
-                          onChange={this.handleChange(this, 'from')}
+                          onChange={this.handleChange}
                           placeholder="name"
                         />
                         <label className="text-muted">Message</label>
@@ -70,7 +68,7 @@ class EmailTemplate extends React.Component {
                           name="message"
                           className="texp-primary"
                           value={this.state.message}
-                          onChange={this.handleChange(this, 'message')}
+                          onChange={this.handleChange}
                         />
                         
                         <button variant="primay" type="submit">Submit</button>
