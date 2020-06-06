@@ -1,16 +1,16 @@
 import React from 'react';
 import './App.css';
 import SearchBar from './components/SearchBar'
-import { Container, Row, Col, Card, Navbar, Carousel } from 'react-bootstrap'
-
-
-
+import EmailTemplate from './components/EmailTemplate'
+import { Container, Row, Col, Card, Navbar, Carousel, Modal, Button } from 'react-bootstrap'
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-     former: []
+     former: [],
+     showContactForm: false,
+     contactEmail: "", 
     };
   }
 
@@ -18,6 +18,7 @@ class App extends React.Component {
     fetch('http://localhost:3001/api/candidates/skills/')
       .then(response => response.json())
       .then(data => {
+        console.log("data", data)
         this.setState({
           former: data
         })
@@ -38,6 +39,17 @@ class App extends React.Component {
     })
   }
 
+
+  showModal = (e) => {
+    console.log("value", e.target.value)
+    this.setState({ showContactForm: true, contactEmail: e.target.value })
+  }
+
+  handleClose = (e) => {
+    this.setState({ showContactForm: false })
+  }
+
+  
 
 
   render(){
@@ -117,7 +129,7 @@ class App extends React.Component {
                    <Card.Title>Department</Card.Title>{candidate.department}
                    <Card.Title>Skills</Card.Title>{candidate.title}
                    <Card.Text><h4>Experience</h4></Card.Text>{candidate.experience}
-                   <button className="btn btn-light"><a target="_top" href='mailto: {candidate.email_address}'/>Contact </button>
+                   <Button onClick={this.showModal} value={candidate.email_address}>Contact</Button>
                   </Card.Body>
                  </Card>
                </Col>  
@@ -125,6 +137,9 @@ class App extends React.Component {
             ))}      
             </Row>
           </Container> 
+          <Modal show={this.state.showContactForm}  onHide={this.handleClose}>
+            <EmailTemplate  email={this.state.contactEmail} />
+          </Modal>
         </div>
         
       </div>

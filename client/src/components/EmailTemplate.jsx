@@ -6,7 +6,7 @@ class EmailTemplate extends React.Component {
         super(props);
         this.state = {
             subject: "",
-            email: "",
+            email: props.email,
             from: "",
             message: ""
           
