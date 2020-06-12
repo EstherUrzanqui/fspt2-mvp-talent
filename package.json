@@ -1,23 +1,24 @@
 {
-  "name": "fspt2-mvp-talent",
-  "version": "1.0.0",
-  "main": "index.js",
-  "repository": "https://github.com/EstherUrzanqui/fspt2-mvp-talent.git",
-  "license": "MIT",
-  "dependencies": {
-    "body-parser": "^1.19.0",
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "mysql": "^2.18.1"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.4",
-    "npm-run-all": "^4.1.5"
-  },
-  "scripts": {
-    "dev:server": "nodemon ./api/app.js",
-    "dev:client": "cd ./client && yarn start",
-    "start": "npm-run-all -l -p dev:server dev:client"
-  }
+	"name": "fspt2-mvp-talent",
+	"version": "1.0.0",
+	"main": "index.js",
+	"repository": "https://github.com/EstherUrzanqui/fspt2-mvp-talent.git",
+	"license": "MIT",
+	"dependencies": {
+		"body-parser": "^1.19.0",
+		"cors": "^2.8.5",
+		"dotenv": "^8.2.0",
+		"express": "^4.17.1",
+		"mysql": "^2.18.1"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.4",
+		"npm-run-all": "^4.1.5"
+	},
+	"scripts": {
+		"dev:server": "nodemon ./api/app.js",
+		"dev:client": "cd ./client && yarn start",
+		"start": "npm-run-all -l -p dev:server dev:client",
+		"migrate": "node ./api/model/database.js"
+	}
 }
