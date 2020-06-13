@@ -132,19 +132,19 @@ routes.get("/candidates/skills", (req, res) => {
 	});
 });
 
-// ORIGINAL ROUTE
-// routes.get("/search/:query", (req, res) => {
-// 	const query = req.params.query;
-// 	db(`SELECT department,
-//              experience,
-//              mother_tongue
-//       FROM candidates WHERE department LIKE '%${query}%';`).then(results => {
-// 		res.send(results.data);
-// 	});
-// });
-
-// NEW ROUTE GETTING THE SKILLS ALSO
+// ORIGINAL ROUTE FOR SEARCH QUERY
 routes.get("/search/:query", (req, res) => {
+	const query = req.params.query;
+	db(`SELECT department,
+             experience,
+             mother_tongue
+      FROM candidates WHERE department LIKE '%${query}%';`).then(results => {
+		res.send(results.data);
+	});
+});
+
+// NEW ROUTE TO SEARCH CANDIDATES BY DEPARTMENT GETTING THE SKILLS ALSO
+routes.get("/searchByDepartment/:query", (req, res) => {
 	const query = req.params.query;
 	db(`SELECT candidates.mother_tongue, 
 			candidates.department, 
@@ -159,6 +159,42 @@ routes.get("/search/:query", (req, res) => {
 			ON skills.id = candidates_skills.skills_id
 			WHERE candidates.department LIKE '%${query}%'
 			GROUP BY candidates.id;`).then(results => {
+		res.send(results.data);
+	});
+});
+
+// NEW ROUTE TO SEARCH CANDIDATES BY COMPANY
+routes.get("/searchByCompany/:query", (req, res) => {
+	const query = req.params.query;
+	db(`SELECT candidates.mother_tongue, 
+						candidates.department, 
+						candidates.experience, 
+						companies.name, 
+						companies.City
+					FROM candidates 
+					INNER JOIN companies_candidates 
+						ON companies_candidates.candidate_id = candidates.id 
+					INNER JOIN companies 
+						ON companies.id = companies_candidates.company_id
+			WHERE companies.name LIKE '%${query}%';`).then(results => {
+		res.send(results.data);
+	});
+});
+
+// NEW ROUTE TO SEARCH CANDIDATES BY CITY
+routes.get("/searchByCity/:query", (req, res) => {
+	const query = req.params.query;
+	db(`SELECT candidates.mother_tongue, 
+						candidates.department, 
+						candidates.experience, 
+						companies.name, 
+						companies.City
+					FROM candidates 
+					INNER JOIN companies_candidates 
+						ON companies_candidates.candidate_id = candidates.id 
+					INNER JOIN companies 
+						ON companies.id = companies_candidates.company_id
+			WHERE companies.City LIKE '%${query}%';`).then(results => {
 		res.send(results.data);
 	});
 });

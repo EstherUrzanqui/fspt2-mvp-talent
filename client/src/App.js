@@ -1,6 +1,7 @@
 import React from "react";
 import "./App.css";
 import SearchBar from "./components/SearchBar";
+import DropDownCompanies from "./components/DropDownCompanies";
 import EmailTemplate from "./components/EmailTemplate";
 import {
 	Container,
@@ -18,6 +19,8 @@ class App extends React.Component {
 		super(props);
 		this.state = {
 			former: [],
+			companies: [],
+			candidatesByCompany: [],
 			showContactForm: false,
 			contactEmail: "",
 		};
@@ -32,15 +35,37 @@ class App extends React.Component {
 					former: data,
 				});
 			});
+
+		fetch("http://localhost:3001/api/companies/")
+			.then(response => response.json())
+			.then(data => {
+				this.setState({
+					companies: data,
+				});
+			});
 	}
 
 	fetchSearchResults = (query = "") => {
-		fetch(`http://localhost:3001/api/search/${query}`)
+		fetch(`http://localhost:3001/api/searchByDepartment/${query}`)
 			.then(response => response.json())
 			.then(response => {
 				this.setState({
 					former: response,
 					loading: false,
+				});
+			})
+			.catch(error => {
+				console.log("Error fetching");
+			});
+	};
+
+	fetchResultsByCompanies = (companyName = "") => {
+		fetch(`http://localhost:3001/api/searchByCompany/${companyName}`)
+			.then(response => response.json())
+			.then(response => {
+				console.log("data", response);
+				this.setState({
+					candidatesByCompany: response,
 				});
 			})
 			.catch(error => {
@@ -129,7 +154,7 @@ class App extends React.Component {
 				<Container>
 					<Row>
 						<Col>
-							<h5 clasName="webdescription">
+							<h5 className="webdescription">
 								During COVID19 many companies have been forced to reduce their
 								workforce on a large scale leaving professionals and talented
 								people without a job. This website is intended to help your
@@ -143,6 +168,10 @@ class App extends React.Component {
 
 				<div>
 					<SearchBar onSearch={this.fetchSearchResults} />
+					<DropDownCompanies
+						companies={this.state.companies}
+						onSelection={this.fetchResultsByCompanies}
+					/>
 				</div>
 
 				<div>
