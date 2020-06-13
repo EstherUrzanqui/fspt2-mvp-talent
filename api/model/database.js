@@ -19,19 +19,19 @@ con.connect(function (err) {
 	console.log("Connected!");
 
 	let createCandidateQuery =
-		"DROP TABLE if exists candidate; CREATE TABLE candidate(id int NOT NULL AUTO_INCREMENT, firstname varchar(30) NOT NULL,lastname varchar(30) NOT NULL, email_address varchar(30) NOT NULL, mother_tongue varchar(100) NOT NULL DEFAULT '1', department varchar(100) NOT NULL DEFAULT '1', experience varchar(255) NOT NULL, relocation BOOLEAN NOT NULL DEFAULT '1', remote BOOLEAN NOT NULL DEFAULT '1', PRIMARY KEY (`id`));";
+		"DROP TABLE if exists candidates; CREATE TABLE candidates(id int NOT NULL AUTO_INCREMENT, firstname varchar(30) NOT NULL,lastname varchar(30) NOT NULL, email_address varchar(30) NOT NULL, mother_tongue varchar(100) NOT NULL DEFAULT '1', department varchar(100) NOT NULL DEFAULT '1', experience varchar(255) NOT NULL, relocation BOOLEAN NOT NULL DEFAULT '1', remote BOOLEAN NOT NULL DEFAULT '1', PRIMARY KEY (`id`));";
 	con.query(createCandidateQuery, function (err, result) {
 		if (err) throw err;
-		console.log("Table creation `candidate` was successful!");
+		console.log("Table creation `candidates` was successful!");
 
 		console.log("Closing...");
 	});
 
 	let createCompanyQuery =
-		"DROP TABLE if exists company; CREATE TABLE company(id int NOT NULL AUTO_INCREMENT, name varchar(155) NOT NULL, city varchar(100) NOT NULL, PRIMARY KEY (`id`));";
+		"DROP TABLE if exists companies; CREATE TABLE companies(id int NOT NULL AUTO_INCREMENT, name varchar(155) NOT NULL, city varchar(100) NOT NULL, PRIMARY KEY (`id`));";
 	con.query(createCompanyQuery, function (err, result) {
 		if (err) throw err;
-		console.log("Table creation `company` was successful!");
+		console.log("Table creation `companies` was successful!");
 
 		console.log("Closing...");
 	});
@@ -46,19 +46,19 @@ con.connect(function (err) {
 	});
 
 	let createCompanyCandidateQuery =
-		"DROP TABLE if exists company_candidate; CREATE TABLE company_candidate(candidate_id int NOT NULL, company_id int NOT NULL, FOREIGN KEY(candidate_id) REFERENCES candidate(id), FOREIGN KEY(company_id) REFERENCES company(id));";
+		"DROP TABLE if exists companies_candidates; CREATE TABLE companies_candidates(candidate_id int NOT NULL, company_id int NOT NULL, FOREIGN KEY(candidate_id) REFERENCES candidates(id), FOREIGN KEY(company_id) REFERENCES companies(id));";
 	con.query(createCompanyCandidateQuery, function (err, result) {
 		if (err) throw err;
-		console.log("Table creation `company_candidate` was successful!");
+		console.log("Table creation `companies_candidates` was successful!");
 
 		console.log("Closing...");
 	});
 
 	let createCandidateSkillsQuery =
-		"DROP TABLE if exists candidate_skills; CREATE TABLE candidate_skills(candidate_id int NOT NULL, skills_id int NOT NULL, FOREIGN KEY(candidate_id) REFERENCES candidate(id), FOREIGN KEY(skills_id) REFERENCES skills(id));";
+		"DROP TABLE if exists candidates_skills; CREATE TABLE candidates_skills(candidate_id int NOT NULL, skills_id int NOT NULL, FOREIGN KEY(candidate_id) REFERENCES candidates(id), FOREIGN KEY(skills_id) REFERENCES skills(id));";
 	con.query(createCandidateSkillsQuery, function (err, result) {
 		if (err) throw err;
-		console.log("Table creation `candidate_skills` was successful!");
+		console.log("Table creation `candidates_skills` was successful!");
 
 		console.log("Closing...");
 	});
