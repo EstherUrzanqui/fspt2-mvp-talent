@@ -81,7 +81,7 @@ routes.delete("/candidates/:id", (req, res) => {
 
 //get only the companies listed
 routes.get("/companies", (req, res) => {
-	db("SELECT * FROM companies;").then(results => {
+	db("SELECT * FROM companies ORDER BY companies.name ASC;").then(results => {
 		if (results.error) {
 			res.status(400).send({ message: "There was an error" });
 		}
@@ -181,6 +181,21 @@ routes.get("/searchByCompany/:query", (req, res) => {
 	});
 });
 
+// NEW ROUTE TO GET ALL CITIES WITHOUT DUPLICATES
+routes.get("/cities", (req, res) => {
+	db("SELECT City FROM companies ORDER BY City ASC;").then(results => {
+		if (results.error) {
+			res.status(400).send({ message: "There was an error" });
+		}
+
+		cities = results.data.map(JSON.stringify);
+		uniqueCities = new Set(cities);
+		finalArray = Array.from(uniqueCities).map(JSON.parse);
+
+		res.send(finalArray);
+	});
+});
+
 // NEW ROUTE TO SEARCH CANDIDATES BY CITY
 routes.get("/searchByCity/:query", (req, res) => {
 	const query = req.params.query;
@@ -195,6 +210,37 @@ routes.get("/searchByCity/:query", (req, res) => {
 					INNER JOIN companies 
 						ON companies.id = companies_candidates.company_id
 			WHERE companies.City LIKE '%${query}%';`).then(results => {
+		res.send(results.data);
+	});
+});
+
+//NEW ROUTE TO GET ALL SKILLS
+routes.get("/skills", (req, res) => {
+	db("SELECT * FROM skills ORDER BY skills.title ASC;").then(results => {
+		if (results.error) {
+			res.status(400).send({ message: "There was an error" });
+		}
+
+		res.send(results.data);
+	});
+});
+
+// NEW ROUTE TO SEARCH CANDIDATES BY SKILLS
+routes.get("/searchBySkill/:query", (req, res) => {
+	const query = req.params.query;
+	db(`SELECT candidates.mother_tongue, 
+			candidates.department, 
+			candidates.experience, 
+			candidates.relocation, 
+			candidates.remote, 
+			skills.title, 
+			skills.description
+		FROM candidates 
+		INNER JOIN candidates_skills 
+		ON candidates_skills.candidate_id = candidates.id 
+		INNER JOIN skills 
+		ON skills.id = candidates_skills.skills_id
+		WHERE skills.title LIKE '%${query}%';`).then(results => {
 		res.send(results.data);
 	});
 });

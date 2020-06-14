@@ -2,6 +2,8 @@ import React from "react";
 import "./App.css";
 import SearchBar from "./components/SearchBar";
 import DropDownCompanies from "./components/DropDownCompanies";
+import DropDownCities from "./components/DropDownCities";
+import DropDownSkills from "./components/DropDownSkills";
 import EmailTemplate from "./components/EmailTemplate";
 import {
 	Container,
@@ -20,7 +22,11 @@ class App extends React.Component {
 		this.state = {
 			former: [],
 			companies: [],
+			cities: [],
+			skills: [],
 			candidatesByCompany: [],
+			candidatesByCity: [],
+			candidatesBySkill: [],
 			showContactForm: false,
 			contactEmail: "",
 		};
@@ -41,6 +47,22 @@ class App extends React.Component {
 			.then(data => {
 				this.setState({
 					companies: data,
+				});
+			});
+
+		fetch("http://localhost:3001/api/cities/")
+			.then(response => response.json())
+			.then(data => {
+				this.setState({
+					cities: data,
+				});
+			});
+
+		fetch("http://localhost:3001/api/skills/")
+			.then(response => response.json())
+			.then(data => {
+				this.setState({
+					skills: data,
 				});
 			});
 	}
@@ -66,6 +88,34 @@ class App extends React.Component {
 				console.log("data", response);
 				this.setState({
 					candidatesByCompany: response,
+				});
+			})
+			.catch(error => {
+				console.log("Error fetching");
+			});
+	};
+
+	fetchResultsByCities = (city = "") => {
+		fetch(`http://localhost:3001/api/searchByCity/${city}`)
+			.then(response => response.json())
+			.then(response => {
+				console.log("data", response);
+				this.setState({
+					candidatesByCity: response,
+				});
+			})
+			.catch(error => {
+				console.log("Error fetching");
+			});
+	};
+
+	fetchResultsBySkill = (skill = "") => {
+		fetch(`http://localhost:3001/api/searchBySkill/${skill}`)
+			.then(response => response.json())
+			.then(response => {
+				console.log("data", response);
+				this.setState({
+					candidatesBySkill: response,
 				});
 			})
 			.catch(error => {
@@ -171,6 +221,15 @@ class App extends React.Component {
 					<DropDownCompanies
 						companies={this.state.companies}
 						onSelection={this.fetchResultsByCompanies}
+					/>
+					<DropDownCities
+						cities={this.state.cities}
+						onSelection={this.fetchResultsByCities}
+					/>
+
+					<DropDownSkills
+						skills={this.state.skills}
+						onSelection={this.fetchResultsBySkill}
 					/>
 				</div>
 
