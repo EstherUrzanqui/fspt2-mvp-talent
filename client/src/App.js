@@ -4,6 +4,7 @@ import SearchBar from "./components/SearchBar";
 import DropDownCompanies from "./components/DropDownCompanies";
 import DropDownCities from "./components/DropDownCities";
 import DropDownSkills from "./components/DropDownSkills";
+import DropDownLanguages from "./components/DropDownLanguages";
 import EmailTemplate from "./components/EmailTemplate";
 import {
 	Container,
@@ -24,9 +25,7 @@ class App extends React.Component {
 			companies: [],
 			cities: [],
 			skills: [],
-			candidatesByCompany: [],
-			candidatesByCity: [],
-			candidatesBySkill: [],
+			languages: [],
 			showContactForm: false,
 			contactEmail: "",
 		};
@@ -65,6 +64,14 @@ class App extends React.Component {
 					skills: data,
 				});
 			});
+
+		fetch("http://localhost:3001/api/languages/")
+			.then(response => response.json())
+			.then(data => {
+				this.setState({
+					languages: data,
+				});
+			});
 	}
 
 	fetchSearchResults = (query = "") => {
@@ -87,7 +94,7 @@ class App extends React.Component {
 			.then(response => {
 				console.log("data", response);
 				this.setState({
-					candidatesByCompany: response,
+					former: response,
 				});
 			})
 			.catch(error => {
@@ -101,7 +108,21 @@ class App extends React.Component {
 			.then(response => {
 				console.log("data", response);
 				this.setState({
-					candidatesByCity: response,
+					former: response,
+				});
+			})
+			.catch(error => {
+				console.log("Error fetching");
+			});
+	};
+
+	fetchResultsByLanguage = (language = "") => {
+		fetch(`http://localhost:3001/api/searchByLanguage/${language}`)
+			.then(response => response.json())
+			.then(response => {
+				console.log("data", response);
+				this.setState({
+					former: response,
 				});
 			})
 			.catch(error => {
@@ -115,7 +136,7 @@ class App extends React.Component {
 			.then(response => {
 				console.log("data", response);
 				this.setState({
-					candidatesBySkill: response,
+					former: response,
 				});
 			})
 			.catch(error => {
@@ -227,6 +248,11 @@ class App extends React.Component {
 						onSelection={this.fetchResultsByCities}
 					/>
 
+					<DropDownLanguages
+						languages={this.state.languages}
+						onSelection={this.fetchResultsByLanguage}
+					/>
+
 					<DropDownSkills
 						skills={this.state.skills}
 						onSelection={this.fetchResultsBySkill}
@@ -238,20 +264,20 @@ class App extends React.Component {
 						<Row>
 							  {" "}
 							{this.state.former.map(candidate => (
-								<div className="col-md-4" key={candidate.id}>
+								<div className="col-md-3.5" key={candidate.id}>
 									<Col sm={12}>
 										<Card style={{ width: "18rem" }}>
 											<Card.Body>
-												<Card.Title>Language</Card.Title>
-												{candidate.mother_tongue}
-												<Card.Title>Department</Card.Title>
-												{candidate.department}
-												<Card.Title>Skills</Card.Title>
-												{candidate.title}
-												<Card.Text>
-													<h4>Experience</h4>
-												</Card.Text>
-												{candidate.experience}
+												<Card.Title>Candidate's Details</Card.Title>
+												<hr />
+												<Card.Subtitle>Language</Card.Subtitle>
+												<Card.Text>{candidate.mother_tongue}</Card.Text>
+												<Card.Subtitle>Department</Card.Subtitle>
+												<Card.Text>{candidate.department}</Card.Text>
+												<Card.Subtitle>Skills</Card.Subtitle>
+												<Card.Text>{candidate.title}</Card.Text>
+												<Card.Subtitle>Experience</Card.Subtitle>
+												<Card.Text>{candidate.experience}</Card.Text>
 												<Button
 													onClick={this.showModal}
 													value={candidate.email_address}
@@ -267,7 +293,9 @@ class App extends React.Component {
 						</Row>
 					</Container>
 					<Modal show={this.state.showContactForm} onHide={this.handleClose}>
-						<EmailTemplate email={this.state.contactEmail} />
+						<Modal.Body>
+							<EmailTemplate email={this.state.contactEmail} />
+						</Modal.Body>
 					</Modal>
 				</div>
 			</div>
