@@ -1,21 +1,21 @@
 import React from "react";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 
-const DropDownCompanies = ({ companies, onSelection }) => {
+const DropDownLanguages = ({ languages, onSelection }) => {
 	return (
 		<div className="container">
 			<DropdownButton
 				id="dropdown-basic-button"
-				title="Select candidates by company"
+				title="Select candidates by language"
 			>
-				{companies.map(company => (
-					<div key={company.id}>
+				{languages.map(language => (
+					<div key={language.mother_tongue}>
 						<Dropdown.Item
 							onClick={() => {
-								onSelection(company.name);
+								onSelection(language.mother_tongue);
 							}}
 						>
-							{company.name}
+							{language.mother_tongue}
 						</Dropdown.Item>
 					</div>
 				))}
@@ -24,4 +24,4 @@ const DropDownCompanies = ({ companies, onSelection }) => {
 	);
 };
 
-export default DropDownCompanies;
+export default DropDownLanguages;

@@ -36,7 +36,7 @@ class SearchBar extends React.Component {
 							name="query"
 							value={query}
 							id="search-input"
-							placeholder="Search"
+							placeholder="Search by department"
 							onChange={this.handleOnInputChange}
 						/>
 						<i className="fa fa-search search-icon" aria-hidden="true" />
