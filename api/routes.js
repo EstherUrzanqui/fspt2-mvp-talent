@@ -133,15 +133,15 @@ routes.get("/candidates/skills", (req, res) => {
 });
 
 // ORIGINAL ROUTE FOR SEARCH QUERY
-routes.get("/search/:query", (req, res) => {
-	const query = req.params.query;
-	db(`SELECT department,
-             experience,
-             mother_tongue
-      FROM candidates WHERE department LIKE '%${query}%';`).then(results => {
-		res.send(results.data);
-	});
-});
+// routes.get("/search/:query", (req, res) => {
+// 	const query = req.params.query;
+// 	db(`SELECT department,
+//              experience,
+//              mother_tongue
+//       FROM candidates WHERE department LIKE '%${query}%';`).then(results => {
+// 		res.send(results.data);
+// 	});
+// });
 
 // NEW ROUTE TO SEARCH CANDIDATES BY DEPARTMENT GETTING THE SKILLS ALSO
 routes.get("/searchByDepartment/:query", (req, res) => {
@@ -256,7 +256,7 @@ routes.get("/searchBySkill/:query", (req, res) => {
 		ON candidates_skills.candidate_id = candidates.id 
 		INNER JOIN skills 
 		ON skills.id = candidates_skills.skills_id
-		WHERE skills.title='${query}';`).then(results => {
+		WHERE skills.title LIKE '%${query}%';`).then(results => {
 		res.send(results.data);
 	});
 });
@@ -318,6 +318,60 @@ routes.get("/searchBySkill/search?:title1&:title2", (req, res) => {
 		WHERE skills.title='${query1}' OR skills.title='${query2}';`).then(results => {
 		res.send(results.data);
 	});
+});
+
+routes.get("/search", (req, res) => {
+	const { company, city, language, skill } = req.query;
+
+	db(`SELECT candidates.mother_tongue,
+	candidates.department,
+	candidates.experience,
+	candidates.relocation,
+	candidates.remote,
+	skills.title
+	FROM skills INNER JOIN candidates_skills ON skills.id = candidates_skills.skills_id
+	INNER JOIN candidates ON candidates_skills.candidate_id = candidates.id
+	INNER JOIN companies_candidates ON companies_candidates.candidate_id = candidates.id
+	INNER JOIN companies ON companies.id = companies_candidates.company_id
+	WHERE companies.name LIKE '%${company}%'
+	AND companies.City LIKE '%${city}%'
+	AND candidates.mother_tongue LIKE '%${language}%'
+	AND skills.title LIKE '%${skill}%';`).then(results => {
+		res.send(results.data);
+	});
+
+	// NOT WORKING YET
+
+	// let dbQuery = `SELECT candidates.mother_tongue,
+	// candidates.department,
+	// candidates.experience,
+	// candidates.relocation,
+	// candidates.remote,
+	// skills.title
+	// FROM skills INNER JOIN candidates_skills ON skills.id = candidates_skills.skills_id
+	// INNER JOIN candidates ON candidates_skills.candidate_id = candidates.id
+	// INNER JOIN companies_candidates ON companies_candidates.candidate_id = candidates.id
+	// INNER JOIN companies ON companies.id = companies_candidates.company_id WHERE`;
+
+	// if (company) {
+	// 	dbQuery += `companies.name LIKE '%${company}%'`;
+	// }
+
+	// if (city) {
+	// 	dbQuery += `AND companies.City LIKE '%${city}%'`;
+	// }
+
+	// if (language) {
+	// 	dbQuery += `AND candidates.mother_tongue LIKE '%${language}%'`;
+	// }
+
+	// if (skill) {
+	// 	dbQuery += `AND skills.title LIKE '%${skill}%'`;
+	// }
+
+	// db(dbQuery).then(results => {
+	// 	res.send(results.data);
+	// });
 });
 
 module.exports = routes;

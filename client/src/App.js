@@ -23,9 +23,14 @@ class App extends React.Component {
 		this.state = {
 			former: [],
 			companies: [],
+			companySelection: [],
+			companySelectionRender: "",
 			cities: [],
-			skills: [],
+			citySelection: [],
 			languages: [],
+			languageSelection: [],
+			skills: [],
+			skillSelection: [],
 			showContactForm: false,
 			contactEmail: "",
 		};
@@ -88,55 +93,129 @@ class App extends React.Component {
 			});
 	};
 
-	fetchResultsByCompanies = (companyName = "") => {
-		fetch(`http://localhost:3001/api/searchByCompany/${companyName}`)
-			.then(response => response.json())
-			.then(response => {
-				console.log("data", response);
-				this.setState({
-					former: response,
-				});
-			})
-			.catch(error => {
-				console.log("Error fetching");
-			});
+	// fetchResultsByCompanies = (companyName = "") => {
+	// 	fetch(`http://localhost:3001/api/searchByCompany/${companyName}`)
+	// 		.then(response => response.json())
+	// 		.then(response => {
+	// 			console.log("data", response);
+	// 			this.setState({
+	// 				former: response,
+	// 			});
+	// 		})
+	// 		.catch(error => {
+	// 			console.log("Error fetching");
+	// 		});
+	// };
+
+	// fetchResultsByCities = (city = "") => {
+	// 	fetch(`http://localhost:3001/api/searchByCity/${city}`)
+	// 		.then(response => response.json())
+	// 		.then(response => {
+	// 			console.log("data", response);
+	// 			this.setState({
+	// 				former: response,
+	// 			});
+	// 		})
+	// 		.catch(error => {
+	// 			console.log("Error fetching");
+	// 		});
+	// };
+
+	// fetchResultsByLanguage = (language = "") => {
+	// 	fetch(`http://localhost:3001/api/searchByLanguage/${language}`)
+	// 		.then(response => response.json())
+	// 		.then(response => {
+	// 			console.log("data", response);
+	// 			this.setState({
+	// 				former: response,
+	// 			});
+	// 		})
+	// 		.catch(error => {
+	// 			console.log("Error fetching");
+	// 		});
+	// };
+
+	// fetchResultsBySkill = (skill = "") => {
+	// 	fetch(`http://localhost:3001/api/searchBySkill/${skill}`)
+	// 		.then(response => response.json())
+	// 		.then(response => {
+	// 			console.log("data", response);
+	// 			this.setState({
+	// 				former: response,
+	// 			});
+	// 		})
+	// 		.catch(error => {
+	// 			console.log("Error fetching");
+	// 		});
+	// };
+
+	handleCompany = value => {
+		const newState = {
+			companySelection: [`company=${value}`],
+			companySelectionRender: value,
+		};
+		this.setState(newState);
 	};
 
-	fetchResultsByCities = (city = "") => {
-		fetch(`http://localhost:3001/api/searchByCity/${city}`)
-			.then(response => response.json())
-			.then(response => {
-				console.log("data", response);
-				this.setState({
-					former: response,
-				});
-			})
-			.catch(error => {
-				console.log("Error fetching");
-			});
+	handleCity = value => {
+		const newState = {
+			citySelection: [`city=${value}`],
+		};
+		this.setState(newState);
 	};
 
-	fetchResultsByLanguage = (language = "") => {
-		fetch(`http://localhost:3001/api/searchByLanguage/${language}`)
-			.then(response => response.json())
-			.then(response => {
-				console.log("data", response);
-				this.setState({
-					former: response,
-				});
-			})
-			.catch(error => {
-				console.log("Error fetching");
-			});
+	handleLanguage = value => {
+		const newState = {
+			languageSelection: [`language=${value}`],
+		};
+		this.setState(newState);
 	};
 
-	fetchResultsBySkill = (skill = "") => {
-		fetch(`http://localhost:3001/api/searchBySkill/${skill}`)
+	handleSkill = value => {
+		const newState = {
+			skillSelection: [`skill=${value}`],
+		};
+		this.setState(newState);
+	};
+
+	handleFindCandidate = event => {
+		const {
+			companySelection,
+			citySelection,
+			languageSelection,
+			skillSelection,
+		} = this.state;
+
+		event.preventDefault();
+		let queryString = [];
+
+		if (companySelection.length) {
+			queryString.push(this.state.companySelection);
+		}
+		if (citySelection.length) {
+			queryString.push(this.state.citySelection);
+		}
+		if (languageSelection.length) {
+			queryString.push(this.state.languageSelection);
+		}
+		if (skillSelection.length) {
+			queryString.push(this.state.skillSelection);
+		}
+
+		if (!queryString.length) return;
+
+		this.fetchFilterResults(
+			`http://localhost:3001/api/search?${queryString.join("&")}`
+		);
+	};
+
+	fetchFilterResults = url => {
+		fetch(url)
 			.then(response => response.json())
 			.then(response => {
-				console.log("data", response);
 				this.setState({
 					former: response,
+					loading: false,
 				});
 			})
 			.catch(error => {
@@ -237,28 +316,41 @@ class App extends React.Component {
 					</Row>
 				</Container>
 
-				<div>
+				<div className="container">
 					<SearchBar onSearch={this.fetchSearchResults} />
-					<DropDownCompanies
-						companies={this.state.companies}
-						onSelection={this.fetchResultsByCompanies}
-					/>
-					<DropDownCities
-						cities={this.state.cities}
-						onSelection={this.fetchResultsByCities}
-					/>
 
-					<DropDownLanguages
-						languages={this.state.languages}
-						onSelection={this.fetchResultsByLanguage}
-					/>
+					<div>
+						<DropDownCompanies
+							companies={this.state.companies}
+							onSelection={this.handleCompany}
+							// onSelection={this.fetchResultsByCompanies}
+						/>
+						{/* <p>You selected: {this.state.companySelectionRender}</p> */}
 
-					<DropDownSkills
-						skills={this.state.skills}
-						onSelection={this.fetchResultsBySkill}
-					/>
+						<DropDownCities
+							cities={this.state.cities}
+							onSelection={this.handleCity}
+							// onSelection={this.fetchResultsByCities}
+						/>
+
+						<DropDownLanguages
+							languages={this.state.languages}
+							onSelection={this.handleLanguage}
+							// onSelection={this.fetchResultsByLanguage}
+						/>
+						<DropDownSkills
+							skills={this.state.skills}
+							onSelection={this.handleSkill}
+							// onSelection={this.fetchResultsBySkill}
+						/>
+					</div>
+
+					<div className="container">
+						<Button variant="secondary" onClick={this.handleFindCandidate}>
+							Click here to find candidates
+						</Button>
+					</div>
 				</div>
-
 				<div>
 					<Container>
 						<Row>
