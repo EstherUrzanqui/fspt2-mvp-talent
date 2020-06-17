@@ -161,6 +161,7 @@ class App extends React.Component {
 						<a href="http://localhost:3000/">COVID Talent</a>
 					</Navbar.Brand>
 				</Navbar>
+				{/* It seems taht we can separate the carousel to another component  */}
 				<Carousel>
 					<Carousel.Item>
 						<Carousel.Caption>
@@ -239,6 +240,7 @@ class App extends React.Component {
 
 				<div>
 					<SearchBar onSearch={this.fetchSearchResults} />
+					{/* The dropdown can be more generic and have one DropDown component if the items/choices have the same format */}
 					<DropDownCompanies
 						companies={this.state.companies}
 						onSelection={this.fetchResultsByCompanies}
@@ -263,6 +265,7 @@ class App extends React.Component {
 					<Container>
 						<Row>
 							  {" "}
+							{/* We could move this list to another component so we remove responsibility form this App.js */}
 							{this.state.former.map(candidate => (
 								<div className="col-md-3.5" key={candidate.id}>
 									<Col sm={12}>
