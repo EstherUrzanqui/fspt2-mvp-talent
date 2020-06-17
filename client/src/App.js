@@ -22,15 +22,19 @@ class App extends React.Component {
 		super(props);
 		this.state = {
 			former: [],
+			allCandidates: false,
 			companies: [],
 			companySelection: [],
 			companySelectionRender: "",
-			cities: [],
-			citySelection: [],
 			languages: [],
 			languageSelection: [],
+			languageSelectionRender: "",
+			cities: [],
+			citySelection: [],
+			citySelectionRender: "",
 			skills: [],
 			skillSelection: [],
+			skillSelectionRender: "",
 			showContactForm: false,
 			contactEmail: "",
 		};
@@ -43,6 +47,7 @@ class App extends React.Component {
 				console.log("data", data);
 				this.setState({
 					former: data,
+					allCandidates: true,
 				});
 			});
 
@@ -86,6 +91,7 @@ class App extends React.Component {
 				this.setState({
 					former: response,
 					loading: false,
+					allCandidates: false,
 				});
 			})
 			.catch(error => {
@@ -93,61 +99,65 @@ class App extends React.Component {
 			});
 	};
 
-	// fetchResultsByCompanies = (companyName = "") => {
-	// 	fetch(`http://localhost:3001/api/searchByCompany/${companyName}`)
-	// 		.then(response => response.json())
-	// 		.then(response => {
-	// 			console.log("data", response);
-	// 			this.setState({
-	// 				former: response,
-	// 			});
-	// 		})
-	// 		.catch(error => {
-	// 			console.log("Error fetching");
-	// 		});
-	// };
+	fetchResultsByCompanies = (companyName = "") => {
+		fetch(`http://localhost:3001/api/searchByCompany/${companyName}`)
+			.then(response => response.json())
+			.then(response => {
+				console.log("data", response);
+				this.setState({
+					former: response,
+					allCandidates: false,
+				});
+			})
+			.catch(error => {
+				console.log("Error fetching");
+			});
+	};
 
-	// fetchResultsByCities = (city = "") => {
-	// 	fetch(`http://localhost:3001/api/searchByCity/${city}`)
-	// 		.then(response => response.json())
-	// 		.then(response => {
-	// 			console.log("data", response);
-	// 			this.setState({
-	// 				former: response,
-	// 			});
-	// 		})
-	// 		.catch(error => {
-	// 			console.log("Error fetching");
-	// 		});
-	// };
+	fetchResultsByCities = (city = "") => {
+		fetch(`http://localhost:3001/api/searchByCity/${city}`)
+			.then(response => response.json())
+			.then(response => {
+				console.log("data", response);
+				this.setState({
+					former: response,
+					allCandidates: false,
+				});
+			})
+			.catch(error => {
+				console.log("Error fetching");
+			});
+	};
 
-	// fetchResultsByLanguage = (language = "") => {
-	// 	fetch(`http://localhost:3001/api/searchByLanguage/${language}`)
-	// 		.then(response => response.json())
-	// 		.then(response => {
-	// 			console.log("data", response);
-	// 			this.setState({
-	// 				former: response,
-	// 			});
-	// 		})
-	// 		.catch(error => {
-	// 			console.log("Error fetching");
-	// 		});
-	// };
+	fetchResultsByLanguage = (language = "") => {
+		fetch(`http://localhost:3001/api/searchByLanguage/${language}`)
+			.then(response => response.json())
+			.then(response => {
+				console.log("data", response);
+				this.setState({
+					former: response,
+					allCandidates: false,
+				});
+			})
+			.catch(error => {
+				console.log("Error fetching");
+			});
+	};
 
-	// fetchResultsBySkill = (skill = "") => {
-	// 	fetch(`http://localhost:3001/api/searchBySkill/${skill}`)
-	// 		.then(response => response.json())
-	// 		.then(response => {
-	// 			console.log("data", response);
-	// 			this.setState({
-	// 				former: response,
-	// 			});
-	// 		})
-	// 		.catch(error => {
-	// 			console.log("Error fetching");
-	// 		});
-	// };
+	fetchResultsBySkill = (skill = "") => {
+		fetch(`http://localhost:3001/api/searchBySkill/${skill}`)
+			.then(response => response.json())
+			.then(response => {
+				console.log("data", response);
+				this.setState({
+					former: response,
+					allCandidates: false,
+				});
+			})
+			.catch(error => {
+				console.log("Error fetching");
+			});
+	};
 
 	handleCompany = value => {
 		const newState = {
@@ -155,27 +165,34 @@ class App extends React.Component {
 			companySelectionRender: value,
 		};
 		this.setState(newState);
-	};
-
-	handleCity = value => {
-		const newState = {
-			citySelection: [`city=${value}`],
-		};
-		this.setState(newState);
+		this.fetchResultsByCompanies(value);
 	};
 
 	handleLanguage = value => {
 		const newState = {
 			languageSelection: [`language=${value}`],
+			languageSelectionRender: value,
 		};
 		this.setState(newState);
+		this.fetchResultsByLanguage(value);
+	};
+
+	handleCity = value => {
+		const newState = {
+			citySelection: [`city=${value}`],
+			citySelectionRender: value,
+		};
+		this.setState(newState);
+		this.fetchResultsByCities(value);
 	};
 
 	handleSkill = value => {
 		const newState = {
 			skillSelection: [`skill=${value}`],
+			skillSelectionRender: value,
 		};
 		this.setState(newState);
+		this.fetchResultsBySkill(value);
 	};
 
 	handleFindCandidate = event => {
@@ -216,6 +233,7 @@ class App extends React.Component {
 				this.setState({
 					former: response,
 					loading: false,
+					allCandidates: false,
 				});
 			})
 			.catch(error => {
@@ -316,47 +334,90 @@ class App extends React.Component {
 					</Row>
 				</Container>
 
-				<div className="container">
+				<Container>
+					<Row>
+						<Col className="search-title">
+							<h4>Search by department or use the filters below:</h4>
+						</Col>
+					</Row>
+				</Container>
+
+				<div>
 					<SearchBar onSearch={this.fetchSearchResults} />
 
-					<div>
-						<DropDownCompanies
-							companies={this.state.companies}
-							onSelection={this.handleCompany}
-							// onSelection={this.fetchResultsByCompanies}
-						/>
-						{/* <p>You selected: {this.state.companySelectionRender}</p> */}
-
-						<DropDownCities
-							cities={this.state.cities}
-							onSelection={this.handleCity}
-							// onSelection={this.fetchResultsByCities}
-						/>
-
-						<DropDownLanguages
-							languages={this.state.languages}
-							onSelection={this.handleLanguage}
-							// onSelection={this.fetchResultsByLanguage}
-						/>
-						<DropDownSkills
-							skills={this.state.skills}
-							onSelection={this.handleSkill}
-							// onSelection={this.fetchResultsBySkill}
-						/>
-					</div>
-
-					<div className="container">
-						<Button variant="secondary" onClick={this.handleFindCandidate}>
-							Click here to find candidates
-						</Button>
+					<div className="filter-container">
+						<Container>
+							<Row>
+								<Col>
+									<DropDownCompanies
+										companies={this.state.companies}
+										onSelection={this.handleCompany}
+										// onSelection={this.fetchResultsByCompanies}
+									/>
+									{/* <h5> {this.state.companySelectionRender}</h5> */}
+								</Col>
+								<Col>
+									<DropDownLanguages
+										languages={this.state.languages}
+										onSelection={this.handleLanguage}
+										// onSelection={this.fetchResultsByLanguage}
+									/>
+									{/* <h5> {this.state.languageSelectionRender}</h5> */}
+								</Col>
+								<Col>
+									<DropDownCities
+										cities={this.state.cities}
+										onSelection={this.handleCity}
+										// onSelection={this.fetchResultsByCities}
+									/>
+									{/* <h5> {this.state.citySelectionRender}</h5> */}
+								</Col>
+								<Col>
+									<DropDownSkills
+										skills={this.state.skills}
+										onSelection={this.handleSkill}
+										// onSelection={this.fetchResultsBySkill}
+									/>
+									{/* <h5> {this.state.skillSelectionRender}</h5> */}
+								</Col>
+							</Row>
+							<Row>
+								<div className="filter-button">
+									<Button
+										variant="secondary"
+										onClick={this.handleFindCandidate}
+									>
+										Click here for all filters combined
+									</Button>
+								</div>
+							</Row>
+						</Container>
 					</div>
 				</div>
+
+				<hr />
+
+				<Container>
+					<Row>
+						<Col className="search-title">
+							{this.state.allCandidates ? (
+								<h4>Here is some of our amazing talent:</h4>
+							) : (
+								<h4>Search Results:</h4>
+							)}
+						</Col>
+					</Row>
+				</Container>
+
 				<div>
 					<Container>
 						<Row>
 							  {" "}
 							{this.state.former.map(candidate => (
-								<div className="col-md-3.5" key={candidate.id}>
+								<div
+									className="col-md-3.5 candidates-details"
+									key={candidate.id}
+								>
 									<Col sm={12}>
 										<Card style={{ width: "18rem" }}>
 											<Card.Body>

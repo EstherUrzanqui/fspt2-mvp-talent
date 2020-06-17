@@ -339,39 +339,41 @@ routes.get("/search", (req, res) => {
 	AND skills.title LIKE '%${skill}%';`).then(results => {
 		res.send(results.data);
 	});
+});
 
-	// NOT WORKING YET
+routes.get("/search", (req, res) => {
+	const { company, city, language, skill } = req.query;
 
-	// let dbQuery = `SELECT candidates.mother_tongue,
-	// candidates.department,
-	// candidates.experience,
-	// candidates.relocation,
-	// candidates.remote,
-	// skills.title
-	// FROM skills INNER JOIN candidates_skills ON skills.id = candidates_skills.skills_id
-	// INNER JOIN candidates ON candidates_skills.candidate_id = candidates.id
-	// INNER JOIN companies_candidates ON companies_candidates.candidate_id = candidates.id
-	// INNER JOIN companies ON companies.id = companies_candidates.company_id WHERE`;
+	let dbQuery = `SELECT candidates.mother_tongue,
+	candidates.department,
+	candidates.experience,
+	candidates.relocation,
+	candidates.remote,
+	skills.title
+	FROM skills INNER JOIN candidates_skills ON skills.id = candidates_skills.skills_id
+	INNER JOIN candidates ON candidates_skills.candidate_id = candidates.id
+	INNER JOIN companies_candidates ON companies_candidates.candidate_id = candidates.id
+	INNER JOIN companies ON companies.id = companies_candidates.company_id WHERE`;
 
-	// if (company) {
-	// 	dbQuery += `companies.name LIKE '%${company}%'`;
-	// }
+	if (company) {
+		dbQuery += `companies.name LIKE '%${company}%'`;
+	}
 
-	// if (city) {
-	// 	dbQuery += `AND companies.City LIKE '%${city}%'`;
-	// }
+	if (city) {
+		dbQuery += `AND companies.City LIKE '%${city}%'`;
+	}
 
-	// if (language) {
-	// 	dbQuery += `AND candidates.mother_tongue LIKE '%${language}%'`;
-	// }
+	if (language) {
+		dbQuery += `AND candidates.mother_tongue LIKE '%${language}%'`;
+	}
 
-	// if (skill) {
-	// 	dbQuery += `AND skills.title LIKE '%${skill}%'`;
-	// }
+	if (skill) {
+		dbQuery += `AND skills.title LIKE '%${skill}%'`;
+	}
 
-	// db(dbQuery).then(results => {
-	// 	res.send(results.data);
-	// });
+	db(dbQuery).then(results => {
+		res.send(results.data);
+	});
 });
 
 module.exports = routes;

@@ -38,9 +38,9 @@ class DropDownSkills extends React.Component {
 		const { skills } = this.props;
 		const { visible } = this.state;
 		return (
-			<div className="container">
+			<div>
 				<Button id="dropdown-basic-button" onClick={this.toggleOptions}>
-					Select candidates by skills:
+					Filter by skills:
 				</Button>
 				{visible && (
 					<Form>
