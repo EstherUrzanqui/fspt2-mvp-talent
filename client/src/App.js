@@ -23,6 +23,7 @@ class App extends React.Component {
 		this.state = {
 			former: [],
 			allCandidates: false,
+			noCandidatesFound: false,
 			companies: [],
 			companySelection: [],
 			companySelectionRender: "",
@@ -207,16 +208,16 @@ class App extends React.Component {
 		let queryString = [];
 
 		if (companySelection.length) {
-			queryString.push(this.state.companySelection);
+			queryString.push(companySelection);
 		}
 		if (citySelection.length) {
-			queryString.push(this.state.citySelection);
+			queryString.push(citySelection);
 		}
 		if (languageSelection.length) {
-			queryString.push(this.state.languageSelection);
+			queryString.push(languageSelection);
 		}
 		if (skillSelection.length) {
-			queryString.push(this.state.skillSelection);
+			queryString.push(skillSelection);
 		}
 
 		if (!queryString.length) return;
@@ -230,11 +231,18 @@ class App extends React.Component {
 		fetch(url)
 			.then(response => response.json())
 			.then(response => {
-				this.setState({
-					former: response,
-					loading: false,
-					allCandidates: false,
-				});
+				if (!response.length) {
+					this.setState({
+						noCandidatesFound: true,
+						allCandidates: false,
+					});
+				} else {
+					this.setState({
+						former: response,
+						loading: false,
+						allCandidates: false,
+					});
+				}
 			})
 			.catch(error => {
 				console.log("Error fetching");
@@ -352,7 +360,6 @@ class App extends React.Component {
 									<DropDownCompanies
 										companies={this.state.companies}
 										onSelection={this.handleCompany}
-										// onSelection={this.fetchResultsByCompanies}
 									/>
 									{/* <h5> {this.state.companySelectionRender}</h5> */}
 								</Col>
@@ -360,7 +367,6 @@ class App extends React.Component {
 									<DropDownLanguages
 										languages={this.state.languages}
 										onSelection={this.handleLanguage}
-										// onSelection={this.fetchResultsByLanguage}
 									/>
 									{/* <h5> {this.state.languageSelectionRender}</h5> */}
 								</Col>
@@ -368,7 +374,6 @@ class App extends React.Component {
 									<DropDownCities
 										cities={this.state.cities}
 										onSelection={this.handleCity}
-										// onSelection={this.fetchResultsByCities}
 									/>
 									{/* <h5> {this.state.citySelectionRender}</h5> */}
 								</Col>
@@ -376,7 +381,6 @@ class App extends React.Component {
 									<DropDownSkills
 										skills={this.state.skills}
 										onSelection={this.handleSkill}
-										// onSelection={this.fetchResultsBySkill}
 									/>
 									{/* <h5> {this.state.skillSelectionRender}</h5> */}
 								</Col>
@@ -413,36 +417,44 @@ class App extends React.Component {
 					<Container>
 						<Row>
 							  {" "}
-							{this.state.former.map(candidate => (
-								<div
-									className="col-md-3.5 candidates-details"
-									key={candidate.id}
-								>
-									<Col sm={12}>
-										<Card style={{ width: "18rem" }}>
-											<Card.Body>
-												<Card.Title>Candidate's Details</Card.Title>
-												<hr />
-												<Card.Subtitle>Language</Card.Subtitle>
-												<Card.Text>{candidate.mother_tongue}</Card.Text>
-												<Card.Subtitle>Department</Card.Subtitle>
-												<Card.Text>{candidate.department}</Card.Text>
-												<Card.Subtitle>Skills</Card.Subtitle>
-												<Card.Text>{candidate.title}</Card.Text>
-												<Card.Subtitle>Experience</Card.Subtitle>
-												<Card.Text>{candidate.experience}</Card.Text>
-												<Button
-													onClick={this.showModal}
-													value={candidate.email_address}
-												>
-													Contact
-												</Button>
-											</Card.Body>
-										</Card>
-									</Col>{" "}
-									 
+							{this.state.noCandidatesFound ? (
+								<div className="sorry-message">
+									<h5>Sorry, no candidates matched your criteria.</h5>
 								</div>
-							))}
+							) : (
+								this.state.former.map(candidate => (
+									<div
+										className="col-md-3.5 candidates-details"
+										key={candidate.id}
+									>
+										<Col sm={12}>
+											<Card style={{ width: "18rem" }}>
+												<Card.Body>
+													<Card.Title>Candidate's Details</Card.Title>
+													<hr />
+													<Card.Subtitle>Department</Card.Subtitle>
+													<Card.Text>{candidate.department}</Card.Text>
+													<Card.Subtitle>Language</Card.Subtitle>
+													<Card.Text>{candidate.mother_tongue}</Card.Text>
+													<Card.Subtitle>City</Card.Subtitle>
+													<Card.Text>{candidate.City}</Card.Text>
+													<Card.Subtitle>Skills</Card.Subtitle>
+													<Card.Text>{candidate.title}</Card.Text>
+													<Card.Subtitle>Experience</Card.Subtitle>
+													<Card.Text>{candidate.experience}</Card.Text>
+													<Button
+														onClick={this.showModal}
+														value={candidate.email_address}
+													>
+														Contact
+													</Button>
+												</Card.Body>
+											</Card>
+										</Col>{" "}
+										 
+									</div>
+								))
+							)}
 						</Row>
 					</Container>
 					<Modal show={this.state.showContactForm} onHide={this.handleClose}>

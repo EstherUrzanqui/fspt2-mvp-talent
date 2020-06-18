@@ -14,19 +14,6 @@ class DropDownSkills extends React.Component {
 		this.setState({ visible: !this.state.visible });
 	};
 
-	// SELECTING MORE THAN ONE SKILL BUT PASSING TO ON SELECTION DOESN'T WORK
-	// handleSelection = event => {
-	// 	event.preventDefault();
-	// 	const { value } = event.target;
-	// 	const { onSelection } = this.props;
-	// 	const newState = {
-	// 		selectedSkills: [...this.state.selectedSkills, value],
-	// 	};
-	// 	this.setState(newState);
-	// 	onSelection(newState);
-	// };
-
-	// SELECTING ONLY ONE SKILL AND PASSING TO ON SELECTION WORKING
 	handleSelection = event => {
 		event.preventDefault();
 		const { value } = event.target;

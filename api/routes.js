@@ -120,13 +120,19 @@ routes.get("/candidates/skills", (req, res) => {
              candidates.department, 
              candidates.experience, 
              candidates.relocation, 
-             candidates.remote, 
+						 candidates.remote, 
+						 companies.name, 
+						 companies.City,
              GROUP_CONCAT(skills.title SEPARATOR ', ') AS title
-      FROM candidates 
-      INNER JOIN candidates_skills 
-        ON candidates_skills.candidate_id = candidates.id 
-      INNER JOIN skills 
-        ON skills.id = candidates_skills.skills_id
+           FROM companies
+					INNER JOIN companies_candidates
+					ON companies.id = companies_candidates.company_id 
+					INNER JOIN candidates 
+					ON companies_candidates.candidate_id = candidates.id 
+					INNER JOIN candidates_skills
+					ON candidates_skills.candidate_id = candidates.id 
+					INNER JOIN skills
+					ON skills.id = candidates_skills.skills_id
       GROUP BY candidates.id;`).then(results => {
 		res.send(results.data);
 	});
@@ -221,11 +227,11 @@ routes.get("/searchByCity/:query", (req, res) => {
 					INNER JOIN candidates
 					ON candidates_skills.candidate_id = candidates.id 
 					INNER JOIN companies_candidates 
-						ON companies_candidates.candidate_id = candidates.id 
+					ON companies_candidates.candidate_id = candidates.id 
 					INNER JOIN companies 
-						ON companies.id = companies_candidates.company_id
+					ON companies.id = companies_candidates.company_id
 			WHERE companies.City LIKE '%${query}%'
-			GROUP BY candidates.id;;`).then(results => {
+			GROUP BY candidates.id;`).then(results => {
 		res.send(results.data);
 	});
 });
@@ -247,16 +253,22 @@ routes.get("/searchBySkill/:query", (req, res) => {
 	db(`SELECT candidates.mother_tongue, 
 			candidates.department, 
 			candidates.experience, 
+			companies.name, 
+			companies.City,
 			candidates.relocation, 
 			candidates.remote, 
 			skills.title, 
 			skills.description
-		FROM candidates 
-		INNER JOIN candidates_skills 
-		ON candidates_skills.candidate_id = candidates.id 
-		INNER JOIN skills 
-		ON skills.id = candidates_skills.skills_id
-		WHERE skills.title LIKE '%${query}%';`).then(results => {
+			FROM companies
+			INNER JOIN companies_candidates
+			ON companies.id = companies_candidates.company_id 
+			INNER JOIN candidates 
+			ON companies_candidates.candidate_id = candidates.id 
+			INNER JOIN candidates_skills
+			ON candidates_skills.candidate_id = candidates.id 
+			INNER JOIN skills
+			ON skills.id = candidates_skills.skills_id
+	  WHERE skills.title LIKE '%${query}%';`).then(results => {
 		res.send(results.data);
 	});
 });
@@ -284,92 +296,66 @@ routes.get("/searchByLanguage/:query", (req, res) => {
 	db(`SELECT candidates.mother_tongue, 
 	candidates.department, 
 	candidates.experience, 
+	companies.name, 
+	companies.City,
 	candidates.relocation, 
 	candidates.remote, 
 	GROUP_CONCAT(skills.title SEPARATOR ', ') AS title
-	FROM candidates 
-	INNER JOIN candidates_skills 
-	ON candidates_skills.candidate_id = candidates.id 
-	INNER JOIN skills 
-	ON skills.id = candidates_skills.skills_id
+  FROM companies
+  INNER JOIN companies_candidates
+  ON companies.id = companies_candidates.company_id 
+  INNER JOIN candidates 
+  ON companies_candidates.candidate_id = candidates.id 
+  INNER JOIN candidates_skills
+  ON candidates_skills.candidate_id = candidates.id 
+  INNER JOIN skills
+  ON skills.id = candidates_skills.skills_id
 	WHERE candidates.mother_tongue LIKE '%${query}%'
 	GROUP BY candidates.id;`).then(results => {
 		res.send(results.data);
 	});
 });
 
-// NEW ROUTE TO SEARCH CANDIDATES BY MORE THAN ONE SKILL **** NOT WORKING
-routes.get("/searchBySkill/search?:title1&:title2", (req, res) => {
-	const query1 = req.params.query1;
-	const query2 = req.params.query2;
-
-	db(`SELECT candidates.mother_tongue, 
-			candidates.department, 
-			candidates.experience, 
-			candidates.relocation, 
-			candidates.remote, 
-			skills.title, 
-			skills.description
-		FROM candidates 
-		INNER JOIN candidates_skills 
-		ON candidates_skills.candidate_id = candidates.id 
-		INNER JOIN skills 
-		ON skills.id = candidates_skills.skills_id
-		WHERE skills.title='${query1}' OR skills.title='${query2}';`).then(results => {
-		res.send(results.data);
-	});
-});
-
-routes.get("/search", (req, res) => {
-	const { company, city, language, skill } = req.query;
-
-	db(`SELECT candidates.mother_tongue,
-	candidates.department,
-	candidates.experience,
-	candidates.relocation,
-	candidates.remote,
-	skills.title
-	FROM skills INNER JOIN candidates_skills ON skills.id = candidates_skills.skills_id
-	INNER JOIN candidates ON candidates_skills.candidate_id = candidates.id
-	INNER JOIN companies_candidates ON companies_candidates.candidate_id = candidates.id
-	INNER JOIN companies ON companies.id = companies_candidates.company_id
-	WHERE companies.name LIKE '%${company}%'
-	AND companies.City LIKE '%${city}%'
-	AND candidates.mother_tongue LIKE '%${language}%'
-	AND skills.title LIKE '%${skill}%';`).then(results => {
-		res.send(results.data);
-	});
-});
-
+// NEW ROUTE SEARCH QUERY
 routes.get("/search", (req, res) => {
 	const { company, city, language, skill } = req.query;
 
 	let dbQuery = `SELECT candidates.mother_tongue,
 	candidates.department,
 	candidates.experience,
+	companies.name, 
+	companies.City,
 	candidates.relocation,
 	candidates.remote,
-	skills.title
+	GROUP_CONCAT(skills.title SEPARATOR ', ') AS title
 	FROM skills INNER JOIN candidates_skills ON skills.id = candidates_skills.skills_id
 	INNER JOIN candidates ON candidates_skills.candidate_id = candidates.id
 	INNER JOIN companies_candidates ON companies_candidates.candidate_id = candidates.id
-	INNER JOIN companies ON companies.id = companies_candidates.company_id WHERE`;
+	INNER JOIN companies ON companies.id = companies_candidates.company_id `;
+
+	let fields = [];
 
 	if (company) {
-		dbQuery += `companies.name LIKE '%${company}%'`;
+		fields.push(["companies.name", `'${company}'`]);
 	}
-
 	if (city) {
-		dbQuery += `AND companies.City LIKE '%${city}%'`;
+		fields.push(["companies.City", `'${city}'`]);
 	}
-
 	if (language) {
-		dbQuery += `AND candidates.mother_tongue LIKE '%${language}%'`;
+		fields.push(["candidates.mother_tongue", `'${language}'`]);
+	}
+	if (skill) {
+		fields.push(["skills.title", `'${skill}'`]);
 	}
 
-	if (skill) {
-		dbQuery += `AND skills.title LIKE '%${skill}%'`;
+	for (let i = 0; i < fields.length; ++i) {
+		if (i == 0) dbQuery += ` WHERE ${fields[i][0]} = ${fields[i][1]}`;
+		else {
+			dbQuery += ` AND ${fields[i][0]} = ${fields[i][1]}`;
+		}
 	}
+
+	dbQuery += "GROUP BY candidates.id;";
 
 	db(dbQuery).then(results => {
 		res.send(results.data);
