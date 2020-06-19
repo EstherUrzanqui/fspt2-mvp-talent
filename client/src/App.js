@@ -26,16 +26,12 @@ class App extends React.Component {
 			noCandidatesFound: false,
 			companies: [],
 			companySelection: [],
-			companySelectionRender: "",
 			languages: [],
 			languageSelection: [],
-			languageSelectionRender: "",
 			cities: [],
 			citySelection: [],
-			citySelectionRender: "",
 			skills: [],
 			skillSelection: [],
-			skillSelectionRender: "",
 			showContactForm: false,
 			contactEmail: "",
 		};
@@ -163,7 +159,6 @@ class App extends React.Component {
 	handleCompany = value => {
 		const newState = {
 			companySelection: [`company=${value}`],
-			companySelectionRender: value,
 		};
 		this.setState(newState);
 		this.fetchResultsByCompanies(value);
@@ -172,7 +167,6 @@ class App extends React.Component {
 	handleLanguage = value => {
 		const newState = {
 			languageSelection: [`language=${value}`],
-			languageSelectionRender: value,
 		};
 		this.setState(newState);
 		this.fetchResultsByLanguage(value);
@@ -181,7 +175,6 @@ class App extends React.Component {
 	handleCity = value => {
 		const newState = {
 			citySelection: [`city=${value}`],
-			citySelectionRender: value,
 		};
 		this.setState(newState);
 		this.fetchResultsByCities(value);
@@ -190,7 +183,6 @@ class App extends React.Component {
 	handleSkill = value => {
 		const newState = {
 			skillSelection: [`skill=${value}`],
-			skillSelectionRender: value,
 		};
 		this.setState(newState);
 		this.fetchResultsBySkill(value);
@@ -330,7 +322,7 @@ class App extends React.Component {
 				<Container>
 					<Row>
 						<Col>
-							<h5 className="webdescription">
+							<h5 className="web-description">
 								During COVID19 many companies have been forced to reduce their
 								workforce on a large scale leaving professionals and talented
 								people without a job. This website is intended to help your
@@ -361,28 +353,24 @@ class App extends React.Component {
 										companies={this.state.companies}
 										onSelection={this.handleCompany}
 									/>
-									{/* <h5> {this.state.companySelectionRender}</h5> */}
 								</Col>
 								<Col>
 									<DropDownLanguages
 										languages={this.state.languages}
 										onSelection={this.handleLanguage}
 									/>
-									{/* <h5> {this.state.languageSelectionRender}</h5> */}
 								</Col>
 								<Col>
 									<DropDownCities
 										cities={this.state.cities}
 										onSelection={this.handleCity}
 									/>
-									{/* <h5> {this.state.citySelectionRender}</h5> */}
 								</Col>
 								<Col>
 									<DropDownSkills
 										skills={this.state.skills}
 										onSelection={this.handleSkill}
 									/>
-									{/* <h5> {this.state.skillSelectionRender}</h5> */}
 								</Col>
 							</Row>
 							<Row>
