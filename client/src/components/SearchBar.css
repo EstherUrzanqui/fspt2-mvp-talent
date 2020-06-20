@@ -16,8 +16,9 @@
 }
 
 .container input {
-	width: 400px;
+	width: 960px;
 	padding: 8px;
+	margin-left: 90px;
 	font-size: 24px;
 	font-style: italic;
 	color: #444;

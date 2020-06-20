@@ -22,10 +22,16 @@ class App extends React.Component {
 		super(props);
 		this.state = {
 			former: [],
+			allCandidates: false,
+			noCandidatesFound: false,
 			companies: [],
-			cities: [],
-			skills: [],
+			companySelection: [],
 			languages: [],
+			languageSelection: [],
+			cities: [],
+			citySelection: [],
+			skills: [],
+			skillSelection: [],
 			showContactForm: false,
 			contactEmail: "",
 		};
@@ -38,6 +44,7 @@ class App extends React.Component {
 				console.log("data", data);
 				this.setState({
 					former: data,
+					allCandidates: true,
 				});
 			});
 
@@ -81,6 +88,7 @@ class App extends React.Component {
 				this.setState({
 					former: response,
 					loading: false,
+					allCandidates: false,
 				});
 			})
 			.catch(error => {
@@ -95,6 +103,7 @@ class App extends React.Component {
 				console.log("data", response);
 				this.setState({
 					former: response,
+					allCandidates: false,
 				});
 			})
 			.catch(error => {
@@ -109,6 +118,7 @@ class App extends React.Component {
 				console.log("data", response);
 				this.setState({
 					former: response,
+					allCandidates: false,
 				});
 			})
 			.catch(error => {
@@ -123,6 +133,7 @@ class App extends React.Component {
 				console.log("data", response);
 				this.setState({
 					former: response,
+					allCandidates: false,
 				});
 			})
 			.catch(error => {
@@ -137,7 +148,93 @@ class App extends React.Component {
 				console.log("data", response);
 				this.setState({
 					former: response,
+					allCandidates: false,
 				});
+			})
+			.catch(error => {
+				console.log("Error fetching");
+			});
+	};
+
+	handleCompany = value => {
+		const newState = {
+			companySelection: [`company=${value}`],
+		};
+		this.setState(newState);
+		this.fetchResultsByCompanies(value);
+	};
+
+	handleLanguage = value => {
+		const newState = {
+			languageSelection: [`language=${value}`],
+		};
+		this.setState(newState);
+		this.fetchResultsByLanguage(value);
+	};
+
+	handleCity = value => {
+		const newState = {
+			citySelection: [`city=${value}`],
+		};
+		this.setState(newState);
+		this.fetchResultsByCities(value);
+	};
+
+	handleSkill = value => {
+		const newState = {
+			skillSelection: [`skill=${value}`],
+		};
+		this.setState(newState);
+		this.fetchResultsBySkill(value);
+	};
+
+	handleFindCandidate = event => {
+		const {
+			companySelection,
+			citySelection,
+			languageSelection,
+			skillSelection,
+		} = this.state;
+
+		event.preventDefault();
+		let queryString = [];
+
+		if (companySelection.length) {
+			queryString.push(companySelection);
+		}
+		if (citySelection.length) {
+			queryString.push(citySelection);
+		}
+		if (languageSelection.length) {
+			queryString.push(languageSelection);
+		}
+		if (skillSelection.length) {
+			queryString.push(skillSelection);
+		}
+
+		if (!queryString.length) return;
+
+		this.fetchFilterResults(
+			`http://localhost:3001/api/search?${queryString.join("&")}`
+		);
+	};
+
+	fetchFilterResults = url => {
+		fetch(url)
+			.then(response => response.json())
+			.then(response => {
+				if (!response.length) {
+					this.setState({
+						noCandidatesFound: true,
+						allCandidates: false,
+					});
+				} else {
+					this.setState({
+						former: response,
+						loading: false,
+						allCandidates: false,
+					});
+				}
 			})
 			.catch(error => {
 				console.log("Error fetching");
@@ -225,7 +322,7 @@ class App extends React.Component {
 				<Container>
 					<Row>
 						<Col>
-							<h5 className="webdescription">
+							<h5 className="web-description">
 								During COVID19 many companies have been forced to reduce their
 								workforce on a large scale leaving professionals and talented
 								people without a job. This website is intended to help your
@@ -237,59 +334,115 @@ class App extends React.Component {
 					</Row>
 				</Container>
 
+				<Container>
+					<Row>
+						<Col className="search-title">
+							<h4>Search by department or use the filters below:</h4>
+						</Col>
+					</Row>
+				</Container>
+
 				<div>
 					<SearchBar onSearch={this.fetchSearchResults} />
-					<DropDownCompanies
-						companies={this.state.companies}
-						onSelection={this.fetchResultsByCompanies}
-					/>
-					<DropDownCities
-						cities={this.state.cities}
-						onSelection={this.fetchResultsByCities}
-					/>
 
-					<DropDownLanguages
-						languages={this.state.languages}
-						onSelection={this.fetchResultsByLanguage}
-					/>
-
-					<DropDownSkills
-						skills={this.state.skills}
-						onSelection={this.fetchResultsBySkill}
-					/>
+					<div className="filter-container">
+						<Container>
+							<Row>
+								<Col>
+									<DropDownCompanies
+										companies={this.state.companies}
+										onSelection={this.handleCompany}
+									/>
+								</Col>
+								<Col>
+									<DropDownLanguages
+										languages={this.state.languages}
+										onSelection={this.handleLanguage}
+									/>
+								</Col>
+								<Col>
+									<DropDownCities
+										cities={this.state.cities}
+										onSelection={this.handleCity}
+									/>
+								</Col>
+								<Col>
+									<DropDownSkills
+										skills={this.state.skills}
+										onSelection={this.handleSkill}
+									/>
+								</Col>
+							</Row>
+							<Row>
+								<div className="filter-button">
+									<Button
+										variant="secondary"
+										onClick={this.handleFindCandidate}
+									>
+										Click here for all filters combined
+									</Button>
+								</div>
+							</Row>
+						</Container>
+					</div>
 				</div>
+
+				<hr />
+
+				<Container>
+					<Row>
+						<Col className="search-title">
+							{this.state.allCandidates ? (
+								<h4>Here is some of our amazing talent:</h4>
+							) : (
+								<h4>Search Results:</h4>
+							)}
+						</Col>
+					</Row>
+				</Container>
 
 				<div>
 					<Container>
 						<Row>
 							  {" "}
-							{this.state.former.map(candidate => (
-								<div className="col-md-3.5" key={candidate.id}>
-									<Col sm={12}>
-										<Card style={{ width: "18rem" }}>
-											<Card.Body>
-												<Card.Title>Candidate's Details</Card.Title>
-												<hr />
-												<Card.Subtitle>Language</Card.Subtitle>
-												<Card.Text>{candidate.mother_tongue}</Card.Text>
-												<Card.Subtitle>Department</Card.Subtitle>
-												<Card.Text>{candidate.department}</Card.Text>
-												<Card.Subtitle>Skills</Card.Subtitle>
-												<Card.Text>{candidate.title}</Card.Text>
-												<Card.Subtitle>Experience</Card.Subtitle>
-												<Card.Text>{candidate.experience}</Card.Text>
-												<Button
-													onClick={this.showModal}
-													value={candidate.email_address}
-												>
-													Contact
-												</Button>
-											</Card.Body>
-										</Card>
-									</Col>{" "}
-									 
+							{this.state.noCandidatesFound ? (
+								<div className="sorry-message">
+									<h5>Sorry, no candidates matched your criteria.</h5>
 								</div>
-							))}
+							) : (
+								this.state.former.map(candidate => (
+									<div
+										className="col-md-3.5 candidates-details"
+										key={candidate.id}
+									>
+										<Col sm={12}>
+											<Card style={{ width: "18rem" }}>
+												<Card.Body>
+													<Card.Title>Candidate's Details</Card.Title>
+													<hr />
+													<Card.Subtitle>Department</Card.Subtitle>
+													<Card.Text>{candidate.department}</Card.Text>
+													<Card.Subtitle>Language</Card.Subtitle>
+													<Card.Text>{candidate.mother_tongue}</Card.Text>
+													<Card.Subtitle>City</Card.Subtitle>
+													<Card.Text>{candidate.City}</Card.Text>
+													<Card.Subtitle>Skills</Card.Subtitle>
+													<Card.Text>{candidate.title}</Card.Text>
+													<Card.Subtitle>Experience</Card.Subtitle>
+													<Card.Text>{candidate.experience}</Card.Text>
+													<Button
+														onClick={this.showModal}
+														value={candidate.email_address}
+													>
+														Contact
+													</Button>
+												</Card.Body>
+											</Card>
+										</Col>{" "}
+										 
+									</div>
+								))
+							)}
 						</Row>
 					</Container>
 					<Modal show={this.state.showContactForm} onHide={this.handleClose}>

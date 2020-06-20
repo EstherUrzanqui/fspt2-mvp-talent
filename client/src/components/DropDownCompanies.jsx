@@ -3,11 +3,8 @@ import { Dropdown, DropdownButton } from "react-bootstrap";
 
 const DropDownCompanies = ({ companies, onSelection }) => {
 	return (
-		<div className="container">
-			<DropdownButton
-				id="dropdown-basic-button"
-				title="Select candidates by company"
-			>
+		<div>
+			<DropdownButton id="dropdown-basic-button" title="Filter by company">
 				{companies.map(company => (
 					<div key={company.id}>
 						<Dropdown.Item
