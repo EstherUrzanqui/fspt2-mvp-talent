@@ -18,6 +18,21 @@ con.connect(function (err) {
 	if (err) throw err;
 	console.log("Connected!");
 
+	let useDatabase = `USE ${DB_NAME};`;
+    con.query(useDatabase, function (err, result){
+        if(err) throw err;
+        console.log('Connection to `covid_talent` database was successful');
+	});
+
+	let dropChildTables = 
+		"DROP TABLE if exists companies_candidates; DROP TABLE if exists candidates_skills;";
+	con.query(dropChildTables, function (err, result) {
+		if (err) throw err;
+		console.log("Table deletion `companies_candidates and candidates_skills` was successful!");
+	
+		console.log("Closing...");
+	});
+
 	let createCandidateQuery =
 		"DROP TABLE if exists candidates; CREATE TABLE candidates(id int NOT NULL AUTO_INCREMENT, firstname varchar(30) NOT NULL,lastname varchar(30) NOT NULL, email_address varchar(30) NOT NULL, mother_tongue varchar(100) NOT NULL DEFAULT '1', department varchar(100) NOT NULL DEFAULT '1', experience varchar(255) NOT NULL, relocation BOOLEAN NOT NULL DEFAULT '1', remote BOOLEAN NOT NULL DEFAULT '1', PRIMARY KEY (`id`));";
 	con.query(createCandidateQuery, function (err, result) {
@@ -46,7 +61,7 @@ con.connect(function (err) {
 	});
 
 	let createCompanyCandidateQuery =
-		"DROP TABLE if exists companies_candidates; CREATE TABLE companies_candidates(candidate_id int NOT NULL, company_id int NOT NULL, FOREIGN KEY(candidate_id) REFERENCES candidates(id), FOREIGN KEY(company_id) REFERENCES companies(id));";
+		"CREATE TABLE companies_candidates(candidate_id int NOT NULL, company_id int NOT NULL, FOREIGN KEY(candidate_id) REFERENCES candidates(id), FOREIGN KEY(company_id) REFERENCES companies(id));";
 	con.query(createCompanyCandidateQuery, function (err, result) {
 		if (err) throw err;
 		console.log("Table creation `companies_candidates` was successful!");
@@ -55,13 +70,15 @@ con.connect(function (err) {
 	});
 
 	let createCandidateSkillsQuery =
-		"DROP TABLE if exists candidates_skills; CREATE TABLE candidates_skills(candidate_id int NOT NULL, skills_id int NOT NULL, FOREIGN KEY(candidate_id) REFERENCES candidates(id), FOREIGN KEY(skills_id) REFERENCES skills(id));";
+		"CREATE TABLE candidates_skills(candidate_id int NOT NULL, skills_id int NOT NULL, FOREIGN KEY(candidate_id) REFERENCES candidates(id), FOREIGN KEY(skills_id) REFERENCES skills(id));";
 	con.query(createCandidateSkillsQuery, function (err, result) {
 		if (err) throw err;
 		console.log("Table creation `candidates_skills` was successful!");
 
 		console.log("Closing...");
-	});
+		});
+
+
 
 	con.end();
 });

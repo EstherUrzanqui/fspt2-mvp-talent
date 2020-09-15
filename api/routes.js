@@ -120,9 +120,9 @@ routes.get("/candidates/skills", (req, res) => {
              candidates.department, 
              candidates.experience, 
              candidates.relocation, 
-						 candidates.remote, 
-						 companies.name, 
-						 companies.City,
+			 candidates.remote, 
+			 companies.name, 
+			 companies.City,
              GROUP_CONCAT(skills.title SEPARATOR ', ') AS title
            FROM companies
 					INNER JOIN companies_candidates
